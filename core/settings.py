@@ -25,7 +25,8 @@ SECRET_KEY = 'django-insecure-z9poejrs_!uemjr9f$e4g+=!=o1jr#j!6n2u4^f$zmal$qvm)7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ugurhidir.com', 'www.ugurhidir.com', 'localhost', '127.0.0.1', 'web']
+CSRF_TRUSTED_ORIGINS = ['https://ugurhidir.com', 'https://www.ugurhidir.com']
 
 
 # Application definition
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -121,3 +123,5 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
