@@ -1,11 +1,15 @@
 from django.contrib import admin
-from .models import Post
+from .models import Post, Profile, Skill, Certificate, Project
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'slug', 'author', 'publish', 'status')
-    list_filter = ('status', 'created', 'publish', 'author')
-    search_fields = ('title', 'body')
     prepopulated_fields = {'slug': ('title',)}
-    date_hierarchy = 'publish'
-    ordering = ('status', 'publish')
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('name', 'title')
+
+admin.site.register(Skill)
+admin.site.register(Certificate)
+admin.site.register(Project)

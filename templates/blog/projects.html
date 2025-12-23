@@ -2,106 +2,33 @@
 
 {% block content %}
 <div class="animate-fade-in-up">
-    <!-- Başlık -->
     <h1 class="text-3xl font-bold text-white mb-8 border-b border-cyber-gray pb-4">
         <span class="text-cyber-green">sloan@hdr:</span>~$ ls -la ./projects/
     </h1>
 
     <div class="grid md:grid-cols-2 gap-6">
-        
-        <!-- PROJE 1: PortScope -->
-        <div class="border border-cyber-gray bg-cyber-dark p-6 group hover:border-cyber-green transition-all duration-300 relative overflow-hidden flex flex-col">
-            <div class="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-100 transition-opacity">
-                 <svg class="w-8 h-8 text-cyber-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
-            </div>
-            
+        {% for project in projects %}
+        <div class="border border-cyber-gray bg-cyber-dark p-6 group hover:border-cyber-green transition-all duration-300 relative flex flex-col">
             <div class="flex items-center gap-2 mb-3">
-                <span class="text-xs font-bold bg-cyber-green text-black px-2 py-0.5 rounded-sm">OWN PROJECT</span>
-                <span class="text-xs text-gray-500 font-mono">2023</span>
+                <span class="text-xs font-bold bg-cyber-green text-black px-2 py-0.5 rounded-sm">{{ project.category }}</span>
+                <span class="text-xs text-gray-500 font-mono">{{ project.year }}</span>
             </div>
-
-            <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyber-green font-mono">PortScope</h3>
-            <p class="text-gray-400 text-sm mb-6 font-mono flex-grow">
-                Web GUI arayüzüne sahip, kullanıcı dostu bir Port Tarama aracı. Ağ üzerindeki açık portları tespit eder ve raporlar.
-            </p>
-            
-            <div class="flex flex-wrap gap-2 text-xs font-mono mb-4">
-                <span class="bg-gray-800 border border-gray-600 px-2 py-1 text-gray-300">Python</span>
-                <span class="bg-gray-800 border border-gray-600 px-2 py-1 text-gray-300">Networking</span>
-                <span class="bg-gray-800 border border-gray-600 px-2 py-1 text-gray-300">Web GUI</span>
+            <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyber-green font-mono">{{ project.title }}</h3>
+            <p class="text-gray-400 text-sm mb-6 font-mono flex-grow">{{ project.description }}</p>
+            <div class="flex flex-wrap gap-2 text-xs font-mono mb-4 text-gray-300">
+                {% if project.technologies %}
+                <span class="bg-gray-800 border border-gray-600 px-2 py-1">{{ project.technologies }}</span>
+                {% endif %}
             </div>
-            
-            <a href="https://github.com/ugurhidir" target="_blank" class="text-cyber-green text-sm hover:underline flex items-center mt-auto">
-                > git clone ./PortScope <span class="animate-pulse ml-1">_</span>
-            </a>
+            {% if project.is_private %}
+                <span class="text-gray-500 text-sm font-mono">> Access Restricted [Private]</span>
+            {% else %}
+                <a href="{{ project.repo_url }}" target="_blank" class="text-cyber-green text-sm hover:underline font-mono">> git clone ./{{ project.title|cut:" " }} _</a>
+            {% endif %}
         </div>
-
-        <!-- PROJE 2: XSS-Finder -->
-        <div class="border border-cyber-gray bg-cyber-dark p-6 group hover:border-cyber-green transition-all duration-300 relative overflow-hidden flex flex-col">
-            <div class="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-100 transition-opacity">
-                <svg class="w-8 h-8 text-cyber-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-            </div>
-            
-            <div class="flex items-center gap-2 mb-3">
-                <span class="text-xs font-bold bg-cyber-green text-black px-2 py-0.5 rounded-sm">SECURITY</span>
-            </div>
-
-            <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyber-green font-mono">XSS-Finder</h3>
-            <p class="text-gray-400 text-sm mb-6 font-mono flex-grow">
-                Python ile geliştirilmiş otomatik zafiyet tarayıcısı. Web sitelerindeki XSS (Cross-Site Scripting) açıklarını tespit etmek için kullanılır.
-            </p>
-            
-            <div class="flex flex-wrap gap-2 text-xs font-mono mb-4">
-                <span class="bg-gray-800 border border-gray-600 px-2 py-1 text-gray-300">Python</span>
-                <span class="bg-gray-800 border border-gray-600 px-2 py-1 text-gray-300">Security</span>
-                <span class="bg-gray-800 border border-gray-600 px-2 py-1 text-gray-300">Automation</span>
-            </div>
-            
-            <a href="https://github.com/ugurhidir" target="_blank" class="text-cyber-green text-sm hover:underline flex items-center mt-auto">
-                > git clone ./XSS-Finder <span class="animate-pulse ml-1">_</span>
-            </a>
-        </div>
-
-        <!-- PROJE 3: Mastercard Sim -->
-        <div class="border border-cyber-gray bg-cyber-dark p-6 group hover:border-cyber-green transition-all duration-300 relative overflow-hidden flex flex-col">
-             <div class="absolute top-0 right-0 p-2 opacity-20 group-hover:opacity-100 transition-opacity">
-                <svg class="w-8 h-8 text-cyber-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            </div>
-
-            <div class="flex items-center gap-2 mb-3">
-                 <span class="text-xs font-bold border border-cyber-green text-cyber-green px-2 py-0.5 rounded-sm">SIMULATION</span>
-            </div>
-            
-            <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyber-green font-mono">Mastercard Cybersecurity</h3>
-            <p class="text-gray-400 text-sm mb-6 font-mono flex-grow">
-                Güvenlik tehditlerini analiz etme ve önleme üzerine odaklanan kapsamlı bir iş simülasyonu çalışması.
-            </p>
-            
-            <div class="flex flex-wrap gap-2 text-xs font-mono mb-4">
-                <span class="bg-gray-800 border border-gray-600 px-2 py-1 text-gray-300">Job Simulation</span>
-                <span class="bg-gray-800 border border-gray-600 px-2 py-1 text-gray-300">Blue Team</span>
-            </div>
-            
-             <a href="#" class="text-gray-500 text-sm cursor-not-allowed flex items-center mt-auto">
-                > Access Restricted [Private]
-            </a>
-        </div>
-        
-         <!-- PROJE 4: Blog (Bu Proje) -->
-        <div class="border border-cyber-gray bg-cyber-dark p-6 group hover:border-cyber-green transition-all duration-300 relative overflow-hidden flex flex-col">
-            <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyber-green font-mono">Django CyberBlog</h3>
-            <p class="text-gray-400 text-sm mb-6 font-mono flex-grow">
-                HTMX, Tailwind CSS ve Django kullanılarak geliştirilen, SPA (Single Page App) hissi veren modern blog projesi.
-            </p>
-             <div class="flex flex-wrap gap-2 text-xs font-mono mb-4">
-                <span class="bg-gray-800 border border-gray-600 px-2 py-1 text-gray-300">Django</span>
-                <span class="bg-gray-800 border border-gray-600 px-2 py-1 text-gray-300">HTMX</span>
-            </div>
-             <a href="#" class="text-cyber-green text-sm hover:underline flex items-center mt-auto">
-                > ./view_source.sh <span class="animate-pulse ml-1">_</span>
-            </a>
-        </div>
-
+        {% empty %}
+        <p class="text-gray-500 font-mono">Project list is empty...</p>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}
