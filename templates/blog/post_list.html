@@ -1,0 +1,50 @@
+{% extends template_base %}
+
+{% block content %}
+    <div class="flex justify-between items-end mb-8 border-b border-cyber-gray pb-2">
+        <h1 class="text-3xl font-bold text-white border-l-4 border-cyber-green pl-4">
+            > Gelen Sinyaller
+        </h1>
+        <span class="text-xs text-gray-500 animate-pulse">Monitoring...</span>
+    </div>
+    
+    <div class="grid gap-6">
+        {% for post in posts %}
+            <!-- HTMX Linkleme: hx-get ile veriyi çek, main içine bas, URL'i değiştir -->
+            <a href="{{ post.get_absolute_url }}" 
+               hx-get="{% url 'post_detail' post.slug %}"
+               hx-target="main"
+               hx-push-url="true"
+               class="block group">
+               
+                <div class="border border-cyber-gray p-6 bg-cyber-dark transition-all duration-300 hover:border-cyber-green hover:shadow-[0_0_15px_rgba(0,255,65,0.1)] relative overflow-hidden">
+                    
+                    <!-- Dekoratif Arka Plan Çizgileri -->
+                    <div class="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <svg class="w-16 h-16 text-cyber-green" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg>
+                    </div>
+
+                    <div class="text-xs text-cyber-green mb-2 font-mono flex items-center">
+                        <span class="w-2 h-2 bg-cyber-green rounded-full mr-2 animate-pulse"></span>
+                        {{ post.publish|date:"d M Y" }} // {{ post.author }}
+                    </div>
+                    
+                    <h2 class="text-2xl font-bold mb-3 text-gray-100 group-hover:text-cyber-green transition-colors font-mono">
+                        {{ post.title }}
+                    </h2>
+                    
+                    <p class="text-gray-400 mb-4 line-clamp-3 font-sans text-sm">
+                        {{ post.body|truncatewords:25 }}
+                    </p>
+                    
+                    <div class="flex items-center text-xs text-cyber-dim group-hover:text-cyber-green transition-colors font-mono">
+                        <span class="mr-2">./read_content.sh</span>
+                        <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">_</span>
+                    </div>
+                </div>
+            </a>
+        {% empty %}
+            <p class="text-gray-500 font-mono">>> /var/log/posts: Dosya boş...</p>
+        {% endfor %}
+    </div>
+{% endblock %}
