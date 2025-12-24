@@ -47,7 +47,6 @@ def projects(request):
 # --- OTOMASYON API (n8n İÇİN) ---
 @csrf_exempt
 def api_create_post(request):
-    # API anahtarını daha güvenli bir değişkene alalım
     BLOG_API_KEY = "sloan_automation_secret_key_987"
     
     if request.method == 'POST':
@@ -59,27 +58,32 @@ def api_create_post(request):
             data = json.loads(request.body)
             title = data.get('title')
             content = data.get('content')
+            source_url = data.get('source_url')
             
             if not title or not content:
                 return JsonResponse({'error': 'Title and Content are required'}, status=400)
 
-            slug = slugify(title)
-            if Post.objects.filter(slug=slug).exists():
-                return JsonResponse({'message': 'Post already exists'}, status=200)
+            # ÖNEMLİ: Link üzerinden mükerrer yazı kontrolü
+            if source_url and Post.objects.filter(source_url=source_url).exists():
+                return JsonResponse({'message': 'Post with this source URL already exists'}, status=200)
 
-            # KRİTİK NOKTA: Eğer kullanıcı yoksa hata verme, ilk kullanıcıyı bulmaya çalış
+            slug = slugify(title)
+            # Eğer başlık farklı ama slug aynıysa (nadir) yine engelle
+            if Post.objects.filter(slug=slug).exists():
+                return JsonResponse({'message': 'Slug already exists'}, status=200)
+
             author = User.objects.filter(is_superuser=True).first()
             if not author:
-                # Eğer admin yoksa, geçici olarak sistem için bir tane bul
                 author = User.objects.first()
-            
+
             if not author:
-                return JsonResponse({'error': 'No author found in database. Please create a superuser.'}, status=400)
+                return JsonResponse({'error': 'No author found'}, status=400)
 
             new_post = Post.objects.create(
                 title=title,
                 slug=slug,
                 body=content,
+                source_url=source_url,
                 author=author,
                 status='published'
             )

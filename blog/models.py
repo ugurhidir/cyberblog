@@ -12,6 +12,8 @@ class Post(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
+    # Tekrarı engellemek için haberin orijinal linkini tutan alan:
+    source_url = models.URLField(max_length=500, blank=True, null=True, unique=True)
 
     class Meta:
         ordering = ('-publish',)
@@ -28,7 +30,6 @@ class Profile(models.Model):
     education_uni = models.CharField(max_length=200, default="Eskişehir Osmangazi Uni.")
     education_dept = models.CharField(max_length=200, default="Computer Programming")
     education_year = models.CharField(max_length=50, default="2017 - 2020")
-
     def __str__(self):
         return self.name
 
@@ -51,6 +52,5 @@ class Project(models.Model):
     repo_url = models.URLField(blank=True)
     year = models.CharField(max_length=4, default="2025")
     is_private = models.BooleanField(default=False)
-
     def __str__(self):
         return self.title
