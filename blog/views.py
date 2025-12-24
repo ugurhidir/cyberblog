@@ -5,7 +5,6 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.text import slugify
 from django.contrib.auth.models import User
-from django.conf import settings
 from .models import Post, Profile, Skill, Certificate, Project
 
 # --- NORMAL GÖRÜNÜMLER ---
@@ -33,9 +32,7 @@ def about(request):
     template_base = "base.html"
     if request.headers.get('HX-Request'):
         template_base = "blog/partial.html"
-    return render(request, 'blog/about.html', {
-        'profile': profile, 'skills': skills, 'certificates': certificates, 'template_base': template_base
-    })
+    return render(request, 'blog/about.html', {'profile': profile, 'skills': skills, 'certificates': certificates, 'template_base': template_base})
 
 def projects(request):
     projects_list = Project.objects.all()
@@ -44,44 +41,38 @@ def projects(request):
         template_base = "blog/partial.html"
     return render(request, 'blog/projects.html', {'projects': projects_list, 'template_base': template_base})
 
-# --- OTOMASYON API (n8n İÇİN) ---
+# --- AKILLI OTOMASYON API ---
 @csrf_exempt
 def api_create_post(request):
     BLOG_API_KEY = "sloan_automation_secret_key_987"
     
-    if request.method == 'POST':
-        api_key = request.headers.get('X-Api-Key')
-        if api_key != BLOG_API_KEY:
-            return JsonResponse({'error': 'Unauthorized'}, status=401)
+    # 1. Güvenlik Kontrolü
+    api_key = request.headers.get('X-Api-Key')
+    if api_key != BLOG_API_KEY:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
 
+    # 2. Kontrol Modu (n8n Gemini'ye gitmeden önce buraya soracak)
+    if request.method == 'GET':
+        check_url = request.GET.get('check_url')
+        if check_url and Post.objects.filter(source_url=check_url).exists():
+            return JsonResponse({'exists': True})
+        return JsonResponse({'exists': False})
+
+    # 3. Yazı Oluşturma Modu (POST)
+    if request.method == 'POST':
         try:
             data = json.loads(request.body)
+            source_url = data.get('source_url')
             title = data.get('title')
             content = data.get('content')
-            source_url = data.get('source_url')
-            
-            if not title or not content:
-                return JsonResponse({'error': 'Title and Content are required'}, status=400)
 
-            # ÖNEMLİ: Link üzerinden mükerrer yazı kontrolü
-            if source_url and Post.objects.filter(source_url=source_url).exists():
-                return JsonResponse({'message': 'Post with this source URL already exists'}, status=200)
+            if Post.objects.filter(source_url=source_url).exists():
+                return JsonResponse({'message': 'Already exists'}, status=200)
 
-            slug = slugify(title)
-            # Eğer başlık farklı ama slug aynıysa (nadir) yine engelle
-            if Post.objects.filter(slug=slug).exists():
-                return JsonResponse({'message': 'Slug already exists'}, status=200)
-
-            author = User.objects.filter(is_superuser=True).first()
-            if not author:
-                author = User.objects.first()
-
-            if not author:
-                return JsonResponse({'error': 'No author found'}, status=400)
-
+            author = User.objects.filter(is_superuser=True).first() or User.objects.first()
             new_post = Post.objects.create(
                 title=title,
-                slug=slug,
+                slug=slugify(title),
                 body=content,
                 source_url=source_url,
                 author=author,
@@ -90,4 +81,5 @@ def api_create_post(request):
             return JsonResponse({'message': 'Success', 'id': new_post.id}, status=201)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
-    return JsonResponse({'error': 'Only POST allowed'}, status=405)
+
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
