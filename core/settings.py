@@ -78,4 +78,4 @@ MEDIA_ROOT = os.path.join(PERSISTENT_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CSRF Ayarı (Subdomainleri de kapsasın)
-CSRF_TRUSTED_ORIGINS = ['https://ugurhidir.com', 'https://www.ugurhidir.com']
+CSRF_TRUSTED_ORIGINS = ['https://ugurhidir.com', 'https://www.ugurhidir.com', 'http://django_blog:8000']
