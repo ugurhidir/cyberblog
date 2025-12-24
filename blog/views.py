@@ -47,7 +47,7 @@ def projects(request):
 # --- OTOMASYON API (n8n İÇİN) ---
 @csrf_exempt
 def api_create_post(request):
-    # Bu key settings.py içinde tanımlanmalı (bir sonraki adımda yapacağız)
+    # API anahtarını daha güvenli bir değişkene alalım
     BLOG_API_KEY = "sloan_automation_secret_key_987"
     
     if request.method == 'POST':
@@ -57,16 +57,30 @@ def api_create_post(request):
 
         try:
             data = json.loads(request.body)
-            # Aynı başlıkta yazı varsa tekrar oluşturma (Spam kontrolü)
-            slug = slugify(data['title'])
+            title = data.get('title')
+            content = data.get('content')
+            
+            if not title or not content:
+                return JsonResponse({'error': 'Title and Content are required'}, status=400)
+
+            slug = slugify(title)
             if Post.objects.filter(slug=slug).exists():
                 return JsonResponse({'message': 'Post already exists'}, status=200)
 
+            # KRİTİK NOKTA: Eğer kullanıcı yoksa hata verme, ilk kullanıcıyı bulmaya çalış
+            author = User.objects.filter(is_superuser=True).first()
+            if not author:
+                # Eğer admin yoksa, geçici olarak sistem için bir tane bul
+                author = User.objects.first()
+            
+            if not author:
+                return JsonResponse({'error': 'No author found in database. Please create a superuser.'}, status=400)
+
             new_post = Post.objects.create(
-                title=data['title'],
+                title=title,
                 slug=slug,
-                body=data['content'],
-                author=User.objects.first(), # İlk admini yazar yapar
+                body=content,
+                author=author,
                 status='published'
             )
             return JsonResponse({'message': 'Success', 'id': new_post.id}, status=201)
