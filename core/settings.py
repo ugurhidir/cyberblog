@@ -5,11 +5,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-sloan-security-key-fix-this-later'
 
-DEBUG = False # Canlı ortamda False olmalı
+DEBUG = False 
 
-ALLOWED_HOSTS = ['ugurhidir.com', 'www.ugurhidir.com', 'localhost', '127.0.0.1', 'web', 'django_blog']
+# KRİTİK DEĞİŞİKLİK: Her yerden gelen isteği kabul et (Özellikle Docker içi iletişim için)
+ALLOWED_HOSTS = ['*'] 
 
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -22,7 +22,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Statik dosyalar için
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -51,10 +51,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# --- VERİTABANI VE KALICI VERİ AYARLARI ---
-# Docker içinde burası fiziksel diske bağlı olacak
 PERSISTENT_DIR = os.path.join(BASE_DIR, 'persistent_data')
-
 if not os.path.exists(PERSISTENT_DIR):
     os.makedirs(PERSISTENT_DIR)
 
@@ -65,29 +62,20 @@ DATABASES = {
     }
 }
 
-AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
-]
-
 LANGUAGE_CODE = 'tr-tr'
 TIME_ZONE = 'Europe/Istanbul'
 USE_I18N = True
 USE_TZ = True
 
-# Statik Dosyalar (CSS, JS, Images)
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Medya Dosyaları (Profil resmleri vb.)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(PERSISTENT_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CSRF Ayarı
+# CSRF Ayarı (Subdomainleri de kapsasın)
 CSRF_TRUSTED_ORIGINS = ['https://ugurhidir.com', 'https://www.ugurhidir.com']
